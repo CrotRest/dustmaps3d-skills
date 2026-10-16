@@ -7,7 +7,7 @@ Agent skills (Claude Code and compatible agents) for the all-sky 3D dust extinct
 | skill | what it does | runs on |
 | --- | --- | --- |
 | [`dust-extinction-query`](skills/dust-extinction-query) | E(B−V), dust density, uncertainty and maximum reliable distance for a sightline or a CSV/FITS catalogue; reddening coefficients (Zhang et al. 2024 / 2023) | your machine (`pip install dustmaps3d`) |
-| [`dust-sky-map`](skills/dust-sky-map) | Cartesian or orthographic maps of the mean dust density in a distance shell | a [dustmaps3d-backend](https://github.com/SunnyHina/dustmaps3d-backend) server |
+| [`dust-sky-map`](skills/dust-sky-map) | Cartesian or orthographic maps of the mean dust density in a distance shell, and oblique vertical slices with superbubble cross-sections | a [dustmaps3d-backend](https://github.com/SunnyHina/dustmaps3d-backend) server |
 | [`dust-bubble-plot`](skills/dust-bubble-plot) | near / middle / far three-panel bubble figures plus the inner-disk vs annulus density analysis | a dustmaps3d-backend server |
 | [`astro-coord-tools`](skills/astro-coord-tools) | ICRS / Galactic / ecliptic / heliocentric XYZ conversion; angular ↔ physical size | your machine (`astropy`) |
 

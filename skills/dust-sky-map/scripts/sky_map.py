@@ -1,4 +1,4 @@
-"""Draw a dust-density sky map with dustmaps3d-backend (POST /api/v2/plots/car or /plots/sin).
+"""Draw a dust-density map with dustmaps3d-backend (POST /api/v2/plots/car, /plots/sin or /plots/dpr).
 
 The map is the mean dust density ΔE(B-V)/Δd (mag/kpc) between d_min and d_max, at HEALPix
 Nside 1024; directions whose shell midpoint lies beyond the reliable distance are blank.
@@ -7,6 +7,8 @@ Cartesian (longitude/latitude box):
     python sky_map.py car --lon 0 360 --lat -90 90 --d 0 3 --out allsky.png
 Orthographic (centre + field of view; drawn by STILTS on the server):
     python sky_map.py sin --center 209 -19.4 --fov 20 --d 0.3 0.5 --norm log --vmin 0.01 --vmax 1 --mark
+Oblique slice (a vertical cut through the 3D grid, |X|,|Y| <= 3 kpc, |Z| <= 1 kpc; log scale only):
+    python sky_map.py dpr --angle 60 --offset 0.3 --half-width 0.1 --t -3 3 --z -0.5 0.5
 
 Backend address: --api or the DUSTMAPS_API environment variable (default http://127.0.0.1:58123).
 Standard library only.
@@ -72,8 +74,23 @@ def main():
     sin.add_argument("--mark", action="store_true", help="draw a circle of diameter FOV/2.5 at the centre")
     sin.add_argument("--mark-color", choices=MARK_COLORS, default="black")
     style_args(sin, "log", 0.01, 1.0)
+    dpr = sub.add_parser("dpr", help="vertical oblique slice through the 3D dust grid")
+    dpr.add_argument("--angle", type=float, default=60, help="direction of the slice from +X (towards the GC), degrees")
+    dpr.add_argument("--offset", type=float, default=0.3, help="distance of the slice plane from the Sun, kpc")
+    dpr.add_argument("--half-width", type=float, default=0.1, help="half-thickness of the slice, kpc")
+    dpr.add_argument("--t", nargs=2, type=float, default=[-3, 3], metavar=("MIN", "MAX"), help="along-slice range, kpc")
+    dpr.add_argument("--z", nargs=2, type=float, default=[-0.5, 0.5], metavar=("MIN", "MAX"), help="height range, kpc")
+    dpr.add_argument("--no-bubbles", action="store_true", help="do not overlay the superbubble cross-sections")
+    dpr.add_argument("--no-origin", action="store_true", help="do not mark the slice origin with +")
+    dpr.add_argument("--vmin", type=float, default=0.05)
+    dpr.add_argument("--vmax", type=float, default=1.0)
+    dpr.add_argument("--cmap", choices=COLORMAPS, default="Spectral_r")
+    dpr.add_argument("--out", type=Path, help="PNG path (default: a name built from the parameters)")
+    dpr.add_argument("--api", default=os.environ.get("DUSTMAPS_API", "http://127.0.0.1:58123"))
     a = ap.parse_args()
 
+    if a.kind == "dpr":
+        return draw_slice(ap, a)
     d_min, d_max = a.d
     if not (0 <= d_min < d_max):
         ap.error("need 0 <= D_MIN < D_MAX (kpc)")
@@ -94,6 +111,25 @@ def main():
     fetch(api, result["url"], out)
     print(json.dumps({"png": str(out), "seconds": round(time.time() - t0, 1), "request": body,
                       "shows": f"mean dust density between {d_min:g} and {d_max:g} kpc (mag/kpc)"}, indent=2))
+
+
+def draw_slice(ap, a):
+    if not (0 < a.vmin < a.vmax):
+        ap.error("need 0 < vmin < vmax (the slice is always drawn on a log scale)")
+    if a.half_width <= 0 or a.t[0] >= a.t[1] or a.z[0] >= a.z[1] or abs(a.angle) > 360:
+        ap.error("need --half-width > 0, increasing --t and --z ranges, and |--angle| <= 360")
+    body = {"angle_degrees": a.angle, "offset": a.offset, "half_width": a.half_width,
+            "s_range_min": a.t[0], "s_range_max": a.t[1], "z_range_min": a.z[0], "z_range_max": a.z[1],
+            "norm": "log", "vmin": a.vmin, "vmax": a.vmax, "colormap": a.cmap,
+            "show_markers": not a.no_origin, "show_superbubbles": not a.no_bubbles}
+    api = a.api.rstrip("/")
+    t0 = time.time()
+    result = post(api, "/api/v2/plots/dpr", body)
+    out = a.out or Path(f"dust_dpr_theta{a.angle:g}_off{a.offset:g}_hw{a.half_width:g}.png")
+    fetch(api, result["url"], out)
+    print(json.dumps({"png": str(out), "seconds": round(time.time() - t0, 1), "request": body,
+                      "shows": f"dust density (mag/kpc) in a vertical slice at angle {a.angle:g} deg, offset {a.offset:g} kpc"},
+                     indent=2))
 
 
 if __name__ == "__main__":

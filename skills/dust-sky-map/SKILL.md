@@ -1,6 +1,6 @@
 ---
 name: dust-sky-map
-description: Draw sky maps of interstellar dust from the Wang et al. (2025) 3D dust map through dustmaps3d-backend — the mean dust density (ΔE(B−V)/Δd, mag/kpc) in a chosen distance shell, as a Cartesian longitude/latitude map (any box up to the whole sky, Galactic or equatorial) or an orthographic view around a centre with a given field of view. Use when the user wants an extinction / dust / reddening map of a sky region or the whole sky at some distance range, a figure of a molecular-cloud region in a distance slice, or says 画消光图 / 全天消光图 / 尘埃分布图 / 天区尘埃图 / 某个距离层的尘埃 / dust map plot.
+description: Draw sky maps of interstellar dust from the Wang et al. (2025) 3D dust map through dustmaps3d-backend — the mean dust density (ΔE(B−V)/Δd, mag/kpc) in a chosen distance shell, as a Cartesian longitude/latitude map (any box up to the whole sky, Galactic or equatorial) or an orthographic view around a centre with a given field of view; plus vertical oblique slices through the 3D dust grid near the Sun with superbubble cross-sections overlaid. Use when the user wants an extinction / dust / reddening map of a sky region or the whole sky at some distance range, a figure of a molecular-cloud region in a distance slice, or says 画消光图 / 全天消光图 / 尘埃分布图 / 天区尘埃图 / 某个距离层的尘埃 / 斜剖面 / 尘埃垂直分布 / 超级气泡截面 / dust map plot / oblique slice.
 ---
 
 # Dust sky maps (dustmaps3d-backend)
@@ -28,6 +28,9 @@ python scripts/sky_map.py car --frame equatorial --lon 70 100 --lat -20 10 --d 0
 
 # orthographic view, 20° field around Orion, with a marker circle (STILTS, ≈5–15 s)
 python scripts/sky_map.py sin --center 209 -19.4 --fov 20 --d 0.3 0.5 --mark
+
+# oblique slice: vertical plane at 60° from the GC direction, 0.3 kpc from the Sun (≈1–4 s)
+python scripts/sky_map.py dpr --angle 60 --offset 0.3 --half-width 0.1 --t -3 3 --z -0.5 0.5
 ```
 
 Parameters (same as the website's sky-map tool and the NADC form):
@@ -43,6 +46,10 @@ Parameters (same as the website's sky-map tool and the NADC form):
 | `--norm` | `hist`, `linear` or `log` (log needs `--vmin` > 0) | car: hist, sin: log |
 | `--vmin/--vmax` | colour range, mag/kpc | car 0–2, sin 0.01–1 |
 | `--cmap` | Spectral_r, viridis, plasma, inferno, magma, cividis, Greys, rainbow | Spectral_r |
+
+### Oblique slice (`dpr`)
+
+A different kind of figure: not a sky map but a vertical cut through a 3D grid of dust density (mag/kpc) in Sun-centred Galactic coordinates (X towards the Galactic centre, Y along rotation; |X|,|Y| ≤ 3 kpc, |Z| ≤ 1 kpc, 0.01 kpc cells). The plane's horizontal direction makes angle θ (`--angle`) with X and lies `--offset` kpc from the Sun; cells within `--half-width` of it are averaged. The horizontal axis T is measured from the foot of the perpendicular from the Sun (the `+` origin), Z is height. By default the cross-sections of the 30 fitted superbubbles are drawn and labelled SB*n*. Colour scale is always log (`--vmin` > 0; default 0.05–1). Needs `"slices": true` in `/health/ready`; a 503 about a dataset means the server has no 3D grid configured.
 
 The script prints the PNG path and the exact request. Show the image to the user and state the shell and units. A 503 "capacity" reply means the backend is busy; the script waits and retries. A 503 about a dataset means the backend lacks data (orthographic maps also need STILTS on the server).
 
