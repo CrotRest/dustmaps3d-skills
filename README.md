@@ -9,7 +9,7 @@ Agent skills (Claude Code and compatible agents) for the all-sky 3D dust extinct
 | [`dust-extinction-query`](skills/dust-extinction-query) | E(B−V), dust density, uncertainty and maximum reliable distance for a sightline or a CSV/FITS catalogue; reddening coefficients (Zhang et al. 2024 / 2023) | your machine (`pip install dustmaps3d`) |
 | [`dust-sky-map`](skills/dust-sky-map) | Cartesian or orthographic maps of the mean dust density in a distance shell, and oblique vertical slices with superbubble cross-sections | a [dustmaps3d-backend](https://github.com/SunnyHina/dustmaps3d-backend) server |
 | [`dust-bubble-plot`](skills/dust-bubble-plot) | near / middle / far three-panel bubble figures plus the inner-disk vs annulus density analysis | a dustmaps3d-backend server |
-| [`astro-coord-tools`](skills/astro-coord-tools) | ICRS / Galactic / ecliptic / heliocentric XYZ conversion; angular ↔ physical size | your machine (`astropy`) |
+| [`astro-coord-tools`](skills/astro-coord-tools) | ICRS / Galactic / ecliptic / heliocentric XYZ conversion; angular ↔ physical size; apparent ↔ absolute magnitude with distance and extinction | your machine (`astropy`) |
 
 ## 中文
 
@@ -32,7 +32,7 @@ cp -R dustmaps3d-skills/skills/* ~/.claude/skills/
 
 - `dust-extinction-query`：`pip install dustmaps3d`；首次调用会自动下载约 400 MB 数据（国内优先 NADC 镜像）。红化系数另需 `xp-extinction-toolkit==1.0`（要求 `scipy<1.14`）或 `extinction-coefficient==1.8`。
 - `dust-sky-map`、`dust-bubble-plot`：需要一个能访问的 dustmaps3d-backend 服务，地址用环境变量 `DUSTMAPS_API` 指定（默认 `http://127.0.0.1:58123`）。脚本只用 Python 标准库；三联图拼接可选 Pillow。
-- `astro-coord-tools`：`astropy`（星表批量另需 `pandas`）。
+- `astro-coord-tools`：`astropy`（星表批量另需 `pandas`）；星等换算从消光图取消光时另需 `dustmaps3d` 与 `xp-extinction-toolkit==1.0`。
 
 ## English
 
@@ -55,7 +55,7 @@ cp -R dustmaps3d-skills/skills/* ~/.claude/skills/
 
 - `dust-extinction-query`: `pip install dustmaps3d`; the first call downloads ~400 MB of data. Reddening coefficients additionally need `xp-extinction-toolkit==1.0` (with `scipy<1.14`) or `extinction-coefficient==1.8`.
 - `dust-sky-map`, `dust-bubble-plot`: a reachable dustmaps3d-backend, set with `DUSTMAPS_API` (default `http://127.0.0.1:58123`). Standard library only; Pillow is optional for joining the three panels.
-- `astro-coord-tools`: `astropy` (plus `pandas` for catalogues).
+- `astro-coord-tools`: `astropy` (plus `pandas` for catalogues); the magnitude tool's map lookup also needs `dustmaps3d` and `xp-extinction-toolkit==1.0`.
 
 ## Citation
 

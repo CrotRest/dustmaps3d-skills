@@ -14,10 +14,11 @@ import argparse
 import json
 import warnings
 
+# The 2024 curve covers 0.29–5.1 µm: GALEX FUV/NUV and WISE W3/W4, although the toolkit ships
+# their passbands, fall (almost) outside it and come back NaN or meaningless, so they are left out.
 BANDS_2024 = ["Johnson.U", "Johnson.B", "Johnson.V", "Johnson.R", "GAIA3.Gbp", "GAIA3.G", "GAIA3.Grp",
               "SDSS.u", "SDSS.g", "SDSS.r", "SDSS.i", "SDSS.z", "PS1.g", "PS1.r", "PS1.i", "PS1.z", "PS1.y",
-              "2MASS.J", "2MASS.H", "2MASS.Ks", "WISE.W1", "WISE.W2", "WISE.W3", "WISE.W4",
-              "GALEX.FUV", "GALEX.NUV", "440", "550"]
+              "2MASS.J", "2MASS.H", "2MASS.Ks", "WISE.W1", "WISE.W2", "440", "550"]
 BANDS_2023 = ["FUV", "NUV", "g", "r", "i", "z", "y", "u'", "g'", "r'", "i'", "z'", "BP", "G", "RP",
               "J", "H", "Ks", "W1", "W2", "W3", "W4"]
 SFD_FACTOR = 1 / 0.834

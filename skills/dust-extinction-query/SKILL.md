@@ -68,7 +68,7 @@ E(B−V) only gives the colour excess in B−V. For another band or colour you n
 
 Two sources, both from the same group:
 
-- **Zhang et al. (2024), ApJ 972, 207** — median Milky Way extinction curve from Gaia XP spectra (`pip install xp-extinction-toolkit==1.0`, needs `scipy<1.14`). More general: Johnson UBVR, Gaia BP/G/RP, SDSS, Pan-STARRS1, 2MASS, WISE, GALEX, plus any wavelength or custom passband. Returns A_λ or E(a−b) in mag.
+- **Zhang et al. (2024), ApJ 972, 207** — median Milky Way extinction curve from Gaia XP spectra (`pip install xp-extinction-toolkit==1.0`, needs `scipy<1.14`). More general: Johnson UBVR, Gaia BP/G/RP, SDSS, Pan-STARRS1, 2MASS, WISE W1/W2, plus any wavelength or custom passband within the curve's 0.29–5.1 µm. GALEX and WISE W3/W4 lie outside it (the toolkit returns NaN or a meaningless value) — use the 2023 model for those. Returns A_λ or E(a−b) in mag.
 - **Zhang et al. (2023), ApJS 264, 14** — empirical coefficients (`pip install extinction-coefficient==1.8`). Narrower but more precise: GALEX, PS1, SDSS, Gaia, 2MASS, WISE, valid for E(B−V) 0–0.5 mag and Teff 4000–10000 K. Returns the dimensionless R. **These coefficients are built on SFD: multiply E(B−V) from this 3D map by 1/0.834 before using them** (Wang et al. 2025, Fig. 17).
 
 ```bash
